@@ -6,6 +6,7 @@ import fileUpload from 'express-fileupload';
 import { channelRoutes } from './routes/channel.route.js';
 import { videoRoutes } from './routes/video.route.js';
 import { commentRoutes } from './routes/comment.route.js';
+import cors from 'cors'
 
 dotenv.config()
 const app=express();
@@ -30,6 +31,7 @@ app.get('/',(req,res)=>{
     res.send("Welcome to root route")
 })
 
+app.use(cors())
 app.use(fileUpload({
     useTempFiles : true,
     tempFileDir : '/tmp/'
