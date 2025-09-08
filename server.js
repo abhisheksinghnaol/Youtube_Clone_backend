@@ -1,5 +1,5 @@
 import express from 'express'
-import { userRoutes } from './routes/User.route.js';
+import {userRoutes} from './routes/user.route.js'
 import dotenv from 'dotenv'
 import mongoose from 'mongoose';
 import fileUpload from 'express-fileupload';
