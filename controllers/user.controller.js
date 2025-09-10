@@ -6,7 +6,7 @@ import cloudinary from "../config/cloudinary.js";
 
 export async function signup(req,res){
     try{
-        const {userName,email,password}=req.body;
+        const {userName,channelName,email,password}=req.body;
         
         const existinguser=await UserModel.findOne({email})
         if(existinguser) return res.status(404).json({message:"email already exist"})
@@ -19,6 +19,7 @@ export async function signup(req,res){
 
             const newUser=new UserModel({
         userName,
+        channelName,
     email,
     password:bcrypt.hashSync(password, 10),
     logoUrl:logo.secure_url})
