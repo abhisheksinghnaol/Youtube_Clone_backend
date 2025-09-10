@@ -12,15 +12,15 @@ export async function signup(req,res){
         if(existinguser) return res.status(404).json({message:"email already exist"})
 
               // Upload logo if provided
-        // let logoUrl = '';
+       
         
 
        const logo=await cloudinary.uploader.upload(req.files.logoUrl.tempFilePath)
 
             const newUser=new UserModel({
-        userName,
-        channelName,
-    email,
+        userName:req.body.userName,
+        channelName:req.body.channelName,
+    email:req.body.channelName,
     password:bcrypt.hashSync(password, 10),
     logoUrl:logo.secure_url})
     const savedUser=await newUser.save()       //save to mongodb
@@ -46,6 +46,7 @@ export async function login(req,res){
             user:{
                 userId: existingUser._id,             
                 userName: existingUser.userName,
+                channelName:existingUser.channelName,
                 email: existingUser.email,
                 logoUrl: existingUser.logoUrl,        
                 accessToken: token
