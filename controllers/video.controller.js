@@ -4,20 +4,16 @@ import mongoose from 'mongoose';
 import jwt from 'jsonwebtoken'
 
 
-export async function getVideo(req, res) {
+export async function own_videos(req, res) {
     try {
-        const videoId = req.params.id;
+        
 
-        const video = await VideoModel.findById(videoId);
-        if (!video) {
-            return res.status(404).json({ message: 'Video not found' });
-        }
+        const videos = await VideoModel.find({userId:req.user._id}).populate('userId','channelName logoUrl');
+ 
 
-        // Increment views and save
-        video.views += 1;
-        await video.save();
-
-        return res.status(200).json(video);
+        return res.status(200).json({
+            videos:videos
+        });
     } catch (err) {
         console.error(err);
         return res.status(500).json({ error: err.message });

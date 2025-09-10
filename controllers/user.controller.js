@@ -9,9 +9,9 @@ export async function signup(req,res){
         const {userName,channelName,email,password}=req.body;
         
         const existinguser=await UserModel.findOne({email})
-        if(existinguser) return res.status(404).json({message:"email already exist"})
+        if(existinguser) return res.status(409).json({message:"email already exist"})
 
-              // Upload logo if provided
+           
        
         
 
@@ -20,11 +20,11 @@ export async function signup(req,res){
             const newUser=new UserModel({
         userName:req.body.userName,
         channelName:req.body.channelName,
-    email:req.body.channelName,
+    email:req.body.email,
     password:bcrypt.hashSync(password, 10),
     logoUrl:logo.secure_url})
     const savedUser=await newUser.save()       //save to mongodb
-    return res.status(200).json({message:savedUser})
+    return res.status(201).json({message:savedUser})
     }
     catch(err){
         console.log("error:",err)
