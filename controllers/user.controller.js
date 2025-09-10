@@ -43,9 +43,11 @@ export async function login(req,res){
         console.log(token);
         res.status(200).send({
             user:{
-                userName:existingUser.userName,
-                email:existingUser.email,
-                accessToken:token
+                userId: existingUser._id,             
+                userName: existingUser.userName,
+                email: existingUser.email,
+                logoUrl: existingUser.logoUrl,        
+                accessToken: token
             }
         })
         
