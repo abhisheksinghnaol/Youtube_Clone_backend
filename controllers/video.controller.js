@@ -8,7 +8,8 @@ export async function own_videos(req, res) {
     try {
         
 
-        const videos = await VideoModel.find({userId:req.user._id}).populate('userId','channelName logoUrl subscribers');
+        const videos = await VideoModel.find({userId:req.user._id}).populate('userId','channelName logoUrl subscribers')
+        .populate("channelId", "channelName channelBanner subscribers");
  
 
         return res.status(200).json({
