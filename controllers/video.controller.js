@@ -20,6 +20,20 @@ export async function own_videos(req, res) {
     }
 }
 
+
+
+// Get all videos (for suggested sidebar)
+export async function getAllVideos(req, res) {
+  try {
+    const videos = await VideoModel.find().populate('userId', 'channelName logoUrl subscribers').lean();
+    return res.status(200).json({ videos });
+  } catch (err) {
+    console.error(err);
+    return res.status(500).json({ error: err.message });
+  }
+}
+
+
 //Upload Video
 
 export async function upload(req, res) {
@@ -120,52 +134,111 @@ export async function remove(req,res){
 
 //Like video
 
-export async function likedVideo(req,res){
-    try{
-        const videoId=req.params.videoId;
-        const video=await VideoModel.findById(videoId)
-        if(video.likedBy.includes(req.user._id)){
-            return res.status(400).json({message:"already liked"})
-        }
-        if(video.dislikedBy.includes(req.user._id)){
-            video.dislikes-=1;
-            video.dislikedBy=video.dislikedBy.filter(userId=>userId.toString()!==req.user._id.toString())
-        }
-        video.likes+=1
-        video.likedBy.push(req.user._id)
-        await video.save()
-        return res.status(200).json({message:"liked"})
+// export async function likedVideo(req,res){
+//     try{
+//         const videoId=req.params.videoId;
+//         const video=await VideoModel.findById(videoId)
+//         if(video.likedBy.includes(req.user._id)){
+//             return res.status(400).json({message:"already liked"})
+//         }
+//         if(video.dislikedBy.includes(req.user._id)){
+//             video.dislikes-=1;
+//             video.dislikedBy=video.dislikedBy.filter(userId=>userId.toString()!==req.user._id.toString())
+//         }
+//         video.likes+=1
+//         video.likedBy.push(req.user._id)
+//         await video.save()
+//         return res.status(200).json({message:"liked"})
+//     }
+//     catch(err){
+//         console.log(err);
+//         return res.status(500).json({error:err.message})
+//     }
+// }
+
+// //Dislike
+
+// export async function dislikedVideo(req,res){
+//     try{
+//         const videoId=req.params.videoId;
+//         const video=await VideoModel.findById(videoId)
+//         if(video.dislikedBy.includes(req.user._id)){
+//             return res.status(400).json({message:"already disliked"})
+//         }
+//         if(video.likedBy.includes(req.user._id)){
+//             video.likes-=1
+//             video.likedBy=video.likedBy.filter(userId=>userId.toString()!==req.user._id.toString())
+//         }
+//         video.dislikes+=1
+//         video.dislikedBy.push(req.user._id)
+//         await video.save()
+//         return res.status(200).json({message:"disliked"})
+//     }
+//     catch(err){
+//         console.log(err);
+//         return res.status(500).json({error:err.message})
+//     }
+// }
+
+// likedVideo 
+export async function likedVideo(req, res) {
+  try {
+    const videoId = req.params.videoId;
+    const video = await VideoModel.findById(videoId);
+    if (!video) return res.status(404).json({ message: "Video not found" });
+
+    // if already liked, toggle off
+    if (video.likedBy.some(id => id.toString() === req.user._id.toString())) {
+      video.likes = Math.max(0, (video.likes || 0) - 1);
+      video.likedBy = video.likedBy.filter(id => id.toString() !== req.user._id.toString());
+    } else {
+      // remove dislike if present
+      if (video.dislikedBy.some(id => id.toString() === req.user._id.toString())) {
+        video.dislikes = Math.max(0, (video.dislikes || 0) - 1);
+        video.dislikedBy = video.dislikedBy.filter(id => id.toString() !== req.user._id.toString());
+      }
+      video.likes = (video.likes || 0) + 1;
+      video.likedBy.push(req.user._id);
     }
-    catch(err){
-        console.log(err);
-        return res.status(500).json({error:err.message})
-    }
+
+    await video.save();
+    // return the updated video
+    return res.status(200).json({ video });
+  } catch (err) {
+    console.log(err);
+    return res.status(500).json({ error: err.message });
+  }
 }
 
-//Dislike
+// dislikedVideo 
+export async function dislikedVideo(req, res) {
+  try {
+    const videoId = req.params.videoId;
+    const video = await VideoModel.findById(videoId);
+    if (!video) return res.status(404).json({ message: "Video not found" });
 
-export async function dislikedVideo(req,res){
-    try{
-        const videoId=req.params.videoId;
-        const video=await VideoModel.findById(videoId)
-        if(video.dislikedBy.includes(req.user._id)){
-            return res.status(400).json({message:"already disliked"})
-        }
-        if(video.likedBy.includes(req.user._id)){
-            video.likes-=1
-            video.likedBy=video.likedBy.filter(userId=>userId.toString()!==req.user._id.toString())
-        }
-        video.dislikes+=1
-        video.dislikedBy.push(req.user._id)
-        await video.save()
-        return res.status(200).json({message:"disliked"})
+    // if already disliked, toggle off
+    if (video.dislikedBy.some(id => id.toString() === req.user._id.toString())) {
+      video.dislikes = Math.max(0, (video.dislikes || 0) - 1);
+      video.dislikedBy = video.dislikedBy.filter(id => id.toString() !== req.user._id.toString());
+    } else {
+      // remove like if present
+      if (video.likedBy.some(id => id.toString() === req.user._id.toString())) {
+        video.likes = Math.max(0, (video.likes || 0) - 1);
+        video.likedBy = video.likedBy.filter(id => id.toString() !== req.user._id.toString());
+      }
+      video.dislikes = (video.dislikes || 0) + 1;
+      video.dislikedBy.push(req.user._id);
     }
-    catch(err){
-        console.log(err);
-        return res.status(500).json({error:err.message})
-    }
+
+    await video.save();
+    // return the updated video
+    return res.status(200).json({ video });
+  } catch (err) {
+    console.log(err);
+    return res.status(500).json({ error: err.message });
+  }
 }
-
 
 
 //Views API

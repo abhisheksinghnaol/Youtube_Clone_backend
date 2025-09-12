@@ -9,6 +9,7 @@ const userSchema=new mongoose.Schema({
     email:{type:String,required:true},
     password:{type:String,required:true},
     logoUrl:{type:String},
+    subscribers:{type:Number,default:0},
     subscribedChannels: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Channel' }],  //channels which user had subscribed
 },{timestamps:true})
 
