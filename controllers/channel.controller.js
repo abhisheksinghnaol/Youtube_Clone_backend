@@ -8,7 +8,13 @@ export async function createChannel(req,res){
         const {channelName,description,channelBanner}=req.body;
         console.log(req.user);
         
-        const channel=await ChannelModel.create({channelName,description,channelBanner})
+        const channel = await ChannelModel.create({
+  channelName,
+  description,
+  channelBanner,
+  owner: req.user._id   
+});
+
         return res.status(201).json({message:"Channel created",channel})
 
     }
@@ -48,9 +54,10 @@ export async function getChannel(req, res) {
 
 export async function subscribe(req,res){
   try{
-    const channelId= req.params.channelId
+    
     const userId=req.user._id
-    const channel=await ChannelModel.findById(channelId)
+   const channel = await ChannelModel.findById(req.params.channelId);
+
     const user=await UserModel.findById(userId)
     if(channel.subscribedBy.includes(userId)){
       return res.status(400).json({message:"already subscribed"})
@@ -59,7 +66,7 @@ export async function subscribe(req,res){
     channel.subscribedBy.push(userId)
     await channel.save()
 
-    user.subscribedChannels.push(channelId._id)
+    user.subscribedChannels.push(req.params.channelId._id)
     await user.save()
     return res.status(200).json({ message: "Subscribed", subscribers: channel.subscribers })
   }
