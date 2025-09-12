@@ -6,6 +6,7 @@ _id:mongoose.Schema.Types.ObjectId   ,
 title: { type: String, required: true},
 description: String,
 userId:{type:mongoose.Schema.Types.ObjectId,ref:'User'},
+channelId: { type: mongoose.Schema.Types.ObjectId, ref: "Channel" },
 thumbnailUrl: String,
 thumbnailId:{ type: String },
 videoUrl: { type: String},
@@ -17,6 +18,8 @@ category: { type: String, default: 'General' },
 likedBy:[{type:mongoose.Schema.ObjectId,ref:'User'}],
 dislikedBy:[{type:mongoose.Schema.ObjectId,ref:'User'}],
 uploadDate: { type: Date, default: Date.now },
+channel: { type: mongoose.Schema.Types.ObjectId, ref: 'Channel' }
+
 },
 { timestamps: true }
 );
