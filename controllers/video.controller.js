@@ -51,7 +51,7 @@ const newVideo=new VideoModel({
     title: req.body.title,
     description:req.body.description,
     userId:req.user._id,
-    channelId: userChannel._id,
+
     thumbnailUrl: uploadedThumbnail.secure_url,
     thumbnailId:uploadedThumbnail.public_id,
     videoUrl: uploadedVideo.secure_url,
