@@ -4,34 +4,47 @@ import jwt from 'jsonwebtoken';
 import cloudinary from "../config/cloudinary.js";
 
 
-export async function signup(req,res){
-    try{
-        const {userName,channelName,email,password}=req.body;
-        
-        const existinguser=await UserModel.findOne({email})
-        if(existinguser) return res.status(409).json({message:"email already exist"})
+export async function signup(req, res) {
+  try {
+    const { userName, channelName, email, password } = req.body;
 
-           
-       
-        
-            let logoUrl='';
-            if(req.files?.logoUrl){
-       const logo=await cloudinary.uploader.upload(req.files.logoUrl.tempFilePath)
-
-            const newUser=new UserModel({
-        userName:req.body.userName,
-        channelName:req.body.channelName,
-    email:req.body.email,
-    password:bcrypt.hashSync(password, 10),
-    logoUrl:logo.secure_url})}
-    const savedUser=await newUser.save()       //save to mongodb
-    return res.status(201).json({message:savedUser})
+    // Check if email already exists
+    const existingUser = await UserModel.findOne({ email });
+    if (existingUser) {
+      return res.status(409).json({ message: "Email already exists" });
     }
-    catch(err){
-        console.log("error:",err)
-        return res.status(500).json({ error: err.message });
-     }
+
+    let logoUrl = "";
+
+    // If logo is uploaded, upload to Cloudinary
+    if (req.files?.logoUrl) {
+      const logo = await cloudinary.uploader.upload(
+        req.files.logoUrl.tempFilePath
+      );
+      logoUrl = logo.secure_url;
+    }
+
+    // Create new user
+    const newUser = new UserModel({
+      userName,
+      channelName,
+      email,
+      password: bcrypt.hashSync(password, 10),
+      logoUrl,
+    });
+
+    const savedUser = await newUser.save(); // Save to MongoDB
+
+    return res.status(201).json({
+      message: "User created successfully",
+      user: savedUser,
+    });
+  } catch (err) {
+    console.log("error:", err);
+    return res.status(500).json({ error: err.message });
+  }
 }
+
 
 export async function login(req,res){
     try{
