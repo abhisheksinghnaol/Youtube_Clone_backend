@@ -14,7 +14,8 @@ export async function signup(req,res){
            
        
         
-
+            let logoUrl='';
+            if(req.files?.logoUrl){
        const logo=await cloudinary.uploader.upload(req.files.logoUrl.tempFilePath)
 
             const newUser=new UserModel({
@@ -22,7 +23,7 @@ export async function signup(req,res){
         channelName:req.body.channelName,
     email:req.body.email,
     password:bcrypt.hashSync(password, 10),
-    logoUrl:logo.secure_url})
+    logoUrl:logo.secure_url})}
     const savedUser=await newUser.save()       //save to mongodb
     return res.status(201).json({message:savedUser})
     }

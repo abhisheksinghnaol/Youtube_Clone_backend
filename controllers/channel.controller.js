@@ -66,7 +66,7 @@ export async function subscribe(req,res){
     channel.subscribedBy.push(userId)
     await channel.save()
 
-    user.subscribedChannels.push(req.params.channelId._id)
+    user.subscribedChannels.push(req.params.channelId)
     await user.save()
     return res.status(200).json({ message: "Subscribed", subscribers: channel.subscribers })
   }
@@ -79,7 +79,7 @@ export async function subscribe(req,res){
 
 export async function unsubscribe(req, res) {
   try {
-    const channelId = req.params.id;
+    const channelId = req.params.channelId;
     const userId = req.user._id;
 
     const [channel, user] = await Promise.all([

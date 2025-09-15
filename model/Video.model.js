@@ -18,7 +18,7 @@ category: { type: String, default: 'General' },
 likedBy:[{type:mongoose.Schema.ObjectId,ref:'User'}],
 dislikedBy:[{type:mongoose.Schema.ObjectId,ref:'User'}],
 uploadDate: { type: Date, default: Date.now },
-channel: { type: mongoose.Schema.Types.ObjectId, ref: 'Channel' }
+// channel: { type: mongoose.Schema.Types.ObjectId, ref: 'Channel' }
 
 },
 { timestamps: true }

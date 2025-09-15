@@ -5,7 +5,7 @@ const commentSchema = new mongoose.Schema(
 {
 _id:mongoose.Schema.Types.ObjectId   , 
 userId:{type:mongoose.Schema.Types.ObjectId,ref:'User'},
-videoId: { type: String,required:true},
+videoId: { type: mongoose.Schema.Types.ObjectId, ref: 'Video', required: true },
 commentText:{type:String,required:true},
 },
 { timestamps: true }
